@@ -2,11 +2,61 @@ local inTrunk = false
 local carrying = false
 local carryingEntity
 
+local beingCarried = false
+local disableKeysTemporary = false
+
 
 --
 --- Functions
 --
 
+
+local function disableKeys()
+    disableKeysTemporary = true
+
+    Citizen.CreateThread(function()
+        while disableKeysTemporary do
+            Citizen.Wait(0)
+
+            -- Can't loop it because it won't have the attended effect due to the wait time
+            DisableControlAction(0, 77, true)
+            DisableControlAction(0, 323, true)
+            DisableControlAction(0, 20, true)
+            DisableControlAction(0, 34, true)
+            DisableControlAction(0, 29, true)
+            DisableControlAction(0, 20, true)
+            DisableControlAction(0, 26, true)
+            DisableControlAction(0, 30, true)
+            DisableControlAction(0, 46, true)
+            DisableControlAction(0, 47, true)
+            DisableControlAction(0, 74, true)
+            DisableControlAction(0, 74, true)
+            DisableControlAction(0, 7, true)
+            DisableControlAction(0, 244, true)
+            DisableControlAction(0, 249, true)
+            DisableControlAction(0, 199, true)
+            DisableControlAction(0, 44, true)
+            DisableControlAction(0, 45, true)
+            DisableControlAction(0, 33, true)
+            DisableControlAction(0, 245, true)
+            DisableControlAction(0, 303, true)
+            DisableControlAction(0, 0, true)
+            DisableControlAction(0, 32, true)
+            DisableControlAction(0, 33, true)
+            DisableControlAction(0, 35, true)
+            DisableControlAction(0, 77, true)
+            DisableControlAction(0, 246, true)
+            DisableControlAction(0, 20, true)
+            DisableControlAction(0, 48, true)
+            DisableControlAction(0, 49, true)
+            DisableControlAction(0, 75, true)
+            DisableControlAction(0, 144, true)
+            DisableControlAction(0, 145, true)
+            DisableControlAction(0, 185, true)
+            DisableControlAction(0, 251, true)
+        end
+    end)
+end
 
 local function checkTrunkOpen(vehicle)
     local playerPedId = PlayerPedId()
@@ -34,6 +84,8 @@ local function startCheckTrunkOpenLoop()
 end
 
 local function hide(playerPedId, data)
+    disableKeys()
+
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, false, false)
 
@@ -61,10 +113,11 @@ local function hide(playerPedId, data)
     Wait(250)
 
     SetEntityVisible(playerPedId, false, 0)
-
 end
 
 local function leaveTrunk(playerPedId, data)
+    disableKeysTemporary = false
+
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, true, true)
 
@@ -101,14 +154,14 @@ local function carryPlayer(data)
         Wait(0)
     end
 
-    TriggerServerEvent("s1n_carryandhideintrunk:carry", GetPlayerServerId(data.entity))
+    TriggerServerEvent("s1n_carryandhideintrunk:carry", GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)))
 
     TaskPlayAnim(PlayerPedId(), "missfinale_c2mcs_1", "fin_c2_mcs_1_camman", 8.0, -8.0, 100000, 49, 0, false, false, false)
-    lib.showTextUI("[E] - Stop carrying")
+    lib.showTextUI("[G] - Stop carrying")
 end
 
 local function hidePlayer(data)
-    TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(carryingEntity), NetworkGetNetworkIdFromEntity(data.entity))
+    TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
 end
 
 
@@ -118,6 +171,9 @@ end
 
 
 RegisterNetEvent("s1n_carryandhideintrunk:carry", function(carrierId)
+    beingCarried = true
+    disableKeys()
+
     RequestAnimDict("nm")
 
     while not HasAnimDictLoaded("nm") do
@@ -135,6 +191,9 @@ end)
 
 
 RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function()
+    beingCarried = false
+    disableKeysTemporary = false
+
     DetachEntity(PlayerPedId(), true, false)
     ClearPedSecondaryTask(PlayerPedId())
 end)
@@ -143,6 +202,8 @@ RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
     local playerPedId = PlayerPedId()
     local vehicle = NetworkGetEntityFromNetworkId(vehicleId)
     if not vehicle then return print("vehicleId: entity not found") end
+
+    disableKeys()
 
     DetachEntity(playerPedId, true, false)
     ClearPedSecondaryTask(playerPedId)
@@ -186,7 +247,7 @@ end, false)
 --
 
 
-exports["ox_target"]:addGlobalPed(
+exports["ox_target"]:addGlobalPlayer(
         {
             name = 'ox_target:carry',
             icon = 'fa-solid fa-car-rear',
@@ -227,6 +288,7 @@ exports["ox_target"]:addGlobalVehicle(
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
                     if carrying then return end
+                    if beingCarried then return end
 
                     if GetVehicleDoorLockStatus(entity) > 1 then return end
                     if IsVehicleDoorDamaged(entity, 5) then return end
@@ -273,9 +335,11 @@ lib.addKeybind({
     onPressed = function(self)
         if not carrying then return end
 
-        TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(carryingEntity))
+        TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 
         --DetachEntity(PlayerPedId(), true, false)
         ClearPedSecondaryTask(PlayerPedId())
+        lib.hideTextUI()
+
     end,
 })
