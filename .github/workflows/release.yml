@@ -1,0 +1,38 @@
+name: Automate Release
+
+on:
+push:
+paths:
+        - '**/fxmanifest.lua'
+workflow_dispatch:
+
+jobs:
+release:
+runs-on: ubuntu-latest
+steps:
+        - name: Check out code
+uses: actions/checkout@v2
+
+- name: Get version and branch name
+id: get_version_and_branch
+run: |
+VERSION=$(grep "^version '" fxmanifest.lua | cut -d"'" -f2)
+BRANCH_NAME=${GITHUB_REF##refs/heads/}
+echo "Found version: $VERSION"
+echo "Branch name: $BRANCH_NAME"
+echo "::set-output name=VERSION::$VERSION"
+echo "::set-output name=BRANCH_NAME::$BRANCH_NAME"
+shell: bash
+
+
+- name: Create GitHub Release
+id: create_release
+uses: actions/create-release@v1
+env:
+GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Ce token est fourni par Actions, vous n'avez pas besoin de le créer vous-même
+      with:
+        tag_name: v${{ steps.get_version_and_branch.outputs.VERSION }}-${{ steps.get_version_and_branch.outputs.BRANCH_NAME }}
+        release_name: v${{ steps.get_version_and_branch.outputs.VERSION }}-${{ steps.get_version_and_branch.outputs.BRANCH_NAME }}
+        body: 'Generated release from fxmanifest.lua.'
+        draft: false
+        prerelease: false

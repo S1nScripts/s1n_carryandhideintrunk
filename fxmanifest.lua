@@ -10,6 +10,7 @@ lua54 'yes'
 game "gta5"
 
 client_scripts {
+    "languages/english.lua",
     "client/main.lua"
 }
 

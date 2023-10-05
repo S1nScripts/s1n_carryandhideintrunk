@@ -4,6 +4,7 @@ local carryingEntity
 
 local beingCarried = false
 local disableKeysTemporary = false
+local putInSomeoneTrunk = false
 
 
 --
@@ -84,6 +85,17 @@ local function startCheckTrunkOpenLoop()
 end
 
 local function hide(playerPedId, data)
+    local isEmpty = lib.callback.await('s1n_carryandhideintrunk:checkEmptyTrunk', 200, NetworkGetNetworkIdFromEntity(data.entity))
+    if not isEmpty then
+        return lib.notify({
+            title = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_TITLE,
+            description = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_DESCRIPTION,
+            type = 'error'
+        })
+    end
+
+    TriggerServerEvent("s1n_carryandhideintrunk:addPlayerToTrunkListing", NetworkGetNetworkIdFromEntity(data.entity))
+
     disableKeys()
 
     SetCarBootOpen(data.entity)
@@ -113,6 +125,8 @@ local function hide(playerPedId, data)
     Wait(250)
 
     SetEntityVisible(playerPedId, false, 0)
+
+    lib.showTextUI("[E] - Get out of the trunk")
 end
 
 local function leaveTrunk(playerPedId, data)
@@ -157,11 +171,25 @@ local function carryPlayer(data)
     TriggerServerEvent("s1n_carryandhideintrunk:carry", GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)))
 
     TaskPlayAnim(PlayerPedId(), "missfinale_c2mcs_1", "fin_c2_mcs_1_camman", 8.0, -8.0, 100000, 49, 0, false, false, false)
-    lib.showTextUI("[G] - Stop carrying")
+    lib.showTextUI(Translation.STOP_CARRYING_SHOW_TEXT)
 end
 
 local function hidePlayer(data)
+    local isEmpty = lib.callback.await('s1n_carryandhideintrunk:checkEmptyTrunk', 200, NetworkGetNetworkIdFromEntity(data.entity))
+    if not isEmpty then
+        return lib.notify({
+            title = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_TITLE,
+            description = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_DESCRIPTION,
+            type = 'error'
+        })
+    end
+
+    ClearPedSecondaryTask(PlayerPedId())
     TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
+end
+
+local function removePlayerFromTrunk(data)
+    TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 end
 
 
@@ -193,7 +221,9 @@ end)
 RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function()
     beingCarried = false
     disableKeysTemporary = false
+    putInSomeoneTrunk = false
 
+    SetEntityVisible(PlayerPedId(), true, false)
     DetachEntity(PlayerPedId(), true, false)
     ClearPedSecondaryTask(PlayerPedId())
 end)
@@ -203,7 +233,10 @@ RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
     local vehicle = NetworkGetEntityFromNetworkId(vehicleId)
     if not vehicle then return print("vehicleId: entity not found") end
 
+    putInSomeoneTrunk = true
+
     disableKeys()
+
 
     DetachEntity(playerPedId, true, false)
     ClearPedSecondaryTask(playerPedId)
@@ -233,7 +266,6 @@ RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
     Wait(250)
 
     SetEntityVisible(playerPedId, false, 0)
-    lib.showTextUI("[E] - Get out of the trunk")
 end)
 
 RegisterCommand("detach", function ()
@@ -266,7 +298,25 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = "Put the person in the trunk",
+                label = Translation.INTERACTION_REMOVE_PERSON_FROM_TRUNK,
+                bones = 'boot',
+                canInteract = function(entity, distance, coords, name, boneId)
+                    if inTrunk then return end
+                    -- If the player did not carry anybody, he can't remove anybody from the trunk
+                    if not carryingEntity then return end
+
+                    if GetVehicleDoorLockStatus(entity) > 1 then return end
+                    if IsVehicleDoorDamaged(entity, 5) then return end
+                    return #(coords - GetEntityBonePosition_2(entity, boneId)) < 0.9
+                end,
+                onSelect = function(data)
+                    removePlayerFromTrunk(data)
+                end
+            },
+            {
+                name = 'ox_target:trunk:hide',
+                icon = 'fa-solid fa-car-rear',
+                label = Translation.INTERACTION_PUT_PERSON_IN_TRUNK,
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
@@ -283,12 +333,13 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = "Hide in trunk",
+                label = Translation.INTERACTION_HIDE_IN_TRUNK,
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
                     if carrying then return end
                     if beingCarried then return end
+                    if putInSomeoneTrunk then return end
 
                     if GetVehicleDoorLockStatus(entity) > 1 then return end
                     if IsVehicleDoorDamaged(entity, 5) then return end
@@ -303,11 +354,12 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:leave',
                 icon = 'fa-solid fa-car-rear',
-                label = "Leave the trunk",
+                label = Translation.INTERACTION_LEAVE_TRUNK,
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if not inTrunk then return end
                     if carrying then return end
+                    if putInSomeoneTrunk then return end
 
                     if GetVehicleDoorLockStatus(entity) > 1 then return end
                     if IsVehicleDoorDamaged(entity, 5) then return end
@@ -330,7 +382,7 @@ exports["ox_target"]:addGlobalVehicle(
 
 lib.addKeybind({
     name = 'stopcarry',
-    description = 'press G to stop carry',
+    description = Translation.KEYBIND_DESCRIPTION_STOP_CARRYING,
     defaultKey = 'G',
     onPressed = function(self)
         if not carrying then return end
@@ -340,6 +392,5 @@ lib.addKeybind({
         --DetachEntity(PlayerPedId(), true, false)
         ClearPedSecondaryTask(PlayerPedId())
         lib.hideTextUI()
-
     end,
 })
