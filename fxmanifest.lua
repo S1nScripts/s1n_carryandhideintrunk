@@ -11,6 +11,7 @@ game "gta5"
 
 client_scripts {
     "languages/english.lua",
+    "config.lua",
     "client/main.lua"
 }
 

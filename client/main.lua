@@ -88,8 +88,8 @@ local function hide(playerPedId, data)
     local isEmpty = lib.callback.await('s1n_carryandhideintrunk:checkEmptyTrunk', 200, NetworkGetNetworkIdFromEntity(data.entity))
     if not isEmpty then
         return lib.notify({
-            title = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_TITLE,
-            description = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_DESCRIPTION,
+            title = 'Ooops !',
+            description = 'There is already someone in the trunk',
             type = 'error'
         })
     end
@@ -171,25 +171,26 @@ local function carryPlayer(data)
     TriggerServerEvent("s1n_carryandhideintrunk:carry", GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)))
 
     TaskPlayAnim(PlayerPedId(), "missfinale_c2mcs_1", "fin_c2_mcs_1_camman", 8.0, -8.0, 100000, 49, 0, false, false, false)
-    lib.showTextUI(Translation.STOP_CARRYING_SHOW_TEXT)
+    lib.showTextUI("[G] - Stop carrying")
 end
 
 local function hidePlayer(data)
     local isEmpty = lib.callback.await('s1n_carryandhideintrunk:checkEmptyTrunk', 200, NetworkGetNetworkIdFromEntity(data.entity))
     if not isEmpty then
         return lib.notify({
-            title = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_TITLE,
-            description = Translation.TRUNK_NOT_EMTPTY_NOTIFICATION_DESCRIPTION,
+            title = 'Ooops !',
+            description = 'There is already someone in the trunk',
             type = 'error'
         })
     end
 
-    ClearPedSecondaryTask(PlayerPedId())
+    ClearPedTasks(PlayerPedId())
     TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
 end
 
 local function removePlayerFromTrunk(data)
-    TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
+    TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
+    lib.hideTextUI()
 end
 
 
@@ -218,14 +219,26 @@ RegisterNetEvent("s1n_carryandhideintrunk:carry", function(carrierId)
 end)
 
 
-RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function()
+RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function(networkTargetVehicleId)
     beingCarried = false
     disableKeysTemporary = false
+    local playerPedId = PlayerPedId()
+
+    if putInSomeoneTrunk and networkTargetVehicleId then
+        local vehicle = NetworkGetEntityFromNetworkId(networkTargetVehicleId)
+        if not vehicle then return print("vehicle: not found") end
+        local behindPos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, -3.0, 0.0)
+
+        print("tp")
+        SetEntityCoords(playerPedId, behindPos.x, behindPos.y, behindPos.z, true, true, true, false)
+
+    end
+
     putInSomeoneTrunk = false
 
-    SetEntityVisible(PlayerPedId(), true, false)
-    DetachEntity(PlayerPedId(), true, false)
-    ClearPedSecondaryTask(PlayerPedId())
+    SetEntityVisible(playerPedId, true, false)
+    DetachEntity(playerPedId, true, false)
+    ClearPedTasks(playerPedId)
 end)
 
 RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
@@ -298,7 +311,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = Translation.INTERACTION_REMOVE_PERSON_FROM_TRUNK,
+                label = "Remove the person from trunk",
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
@@ -316,7 +329,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = Translation.INTERACTION_PUT_PERSON_IN_TRUNK,
+                label = "Put the person in the trunk",
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
@@ -333,7 +346,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = Translation.INTERACTION_HIDE_IN_TRUNK,
+                label = "Hide in trunk",
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
@@ -354,7 +367,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:leave',
                 icon = 'fa-solid fa-car-rear',
-                label = Translation.INTERACTION_LEAVE_TRUNK,
+                label = "Leave the trunk",
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if not inTrunk then return end
@@ -382,14 +395,13 @@ exports["ox_target"]:addGlobalVehicle(
 
 lib.addKeybind({
     name = 'stopcarry',
-    description = Translation.KEYBIND_DESCRIPTION_STOP_CARRYING,
+    description = 'press G to stop carry',
     defaultKey = 'G',
     onPressed = function(self)
         if not carrying then return end
 
         TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 
-        --DetachEntity(PlayerPedId(), true, false)
         ClearPedSecondaryTask(PlayerPedId())
         lib.hideTextUI()
     end,

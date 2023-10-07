@@ -4,23 +4,29 @@ RegisterNetEvent("s1n_carryandhideintrunk:carry", function (targetPlayerId)
     local source = source
 
     -- Avoid exploits
-    -- if #(GetEntityCoords(GetPlayerPed(targetPlayerId)) - GetEntityCoords(GetPlayerPed(source))) > 10 then return end
+    if #(GetEntityCoords(GetPlayerPed(targetPlayerId)) - GetEntityCoords(GetPlayerPed(source))) > 10 then return
+    end
 
     TriggerClientEvent("s1n_carryandhideintrunk:carry", targetPlayerId, source)
 end)
 
-RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function (targetPlayerId)
+RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function (targetPlayerId, networkTargetVehicleId)
     if not playersInTrunk[targetPlayerId] then return end
     playersInTrunk[targetPlayerId] = nil
 
-    TriggerClientEvent("s1n_carryandhideintrunk:stopCarrying", targetPlayerId)
+    -- Avoid exploits
+    if #(GetEntityCoords(GetPlayerPed(targetPlayerId)) - GetEntityCoords(GetPlayerPed(source))) > 10 then return
+    end
+
+    TriggerClientEvent("s1n_carryandhideintrunk:stopCarrying", targetPlayerId, networkTargetVehicleId)
 end)
 
 RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function (targetPlayerId, networkTargetVehicleId)
     local source = source
 
     -- Avoid exploits
-    -- if #(GetEntityCoords(GetPlayerPed(targetPlayerId)) - GetEntityCoords(GetPlayerPed(source))) > 10 then return end
+    if #(GetEntityCoords(GetPlayerPed(targetPlayerId)) - GetEntityCoords(GetPlayerPed(source))) > 10 then return
+    end
 
     playersInTrunk[targetPlayerId] = true
     TriggerClientEvent("s1n_carryandhideintrunk:hidePlayer", targetPlayerId, networkTargetVehicleId)
