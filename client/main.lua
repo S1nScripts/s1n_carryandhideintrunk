@@ -131,6 +131,7 @@ end
 
 local function leaveTrunk(playerPedId, data)
     disableKeysTemporary = false
+    TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing")
 
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, true, true)
@@ -154,6 +155,8 @@ local function leaveTrunk(playerPedId, data)
     Wait(250)
 
     SetEntityVisible(playerPedId, true, 0)
+
+    lib.hideTextUI()
 end
 
 local function carryPlayer(data)
@@ -402,6 +405,7 @@ lib.addKeybind({
 
         TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 
+        --DetachEntity(PlayerPedId(), true, false)
         ClearPedSecondaryTask(PlayerPedId())
         lib.hideTextUI()
     end,
