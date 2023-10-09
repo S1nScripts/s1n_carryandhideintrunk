@@ -2,7 +2,7 @@ fx_version "cerulean"
 
 description "S1nScripts Carry and Hide in Trunk"
 author "S1nScripts"
-version '1.0.1'
+version '1.0.2'
 
 use_experimental_fxv2_oal 'yes'
 lua54 'yes'
