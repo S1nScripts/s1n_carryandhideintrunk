@@ -34,12 +34,12 @@ RegisterNetEvent("s1n_carryandhideintrunk:addPlayerToTrunkListing", function (ne
 end)
 
 
-RegisterNetEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", function ()
+RegisterNetEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", function (networkTargetVehicleId)
     local source = source
 
-    if not playersInTrunk[source] then return end
+    if not playersInTrunk[networkTargetVehicleId] then return end
 
-    playersInTrunk[source] = nil
+    playersInTrunk[networkTargetVehicleId] = nil
 end)
 
 --
