@@ -64,12 +64,16 @@ local function checkTrunkOpen(vehicle)
 
     if GetVehicleDoorAngleRatio(vehicle, 5) >= 0.9 then
         if IsEntityVisible(playerPedId) then return end
-
-        SetEntityVisible(playerPedId, true, false)
+        
+        if not Config.showPlayerInTrunk then
+            SetEntityVisible(playerPedId, true, false)
+        end
     else
         if not IsEntityVisible(playerPedId) then return end
-
-        SetEntityVisible(playerPedId, false, false)
+        
+        if not Config.showPlayerInTrunk then
+            SetEntityVisible(playerPedId, false, false)
+        end
     end
 end
 
@@ -123,8 +127,9 @@ local function hide(playerPedId, data)
     startCheckTrunkOpenLoop()
 
     Wait(250)
-
-    SetEntityVisible(playerPedId, false, 0)
+    if not Config.showPlayerInTrunk then
+        SetEntityVisible(playerPedId, false, 0)
+    end
 
     lib.showTextUI("[E] - Get out of the trunk")
 end
@@ -153,9 +158,9 @@ local function leaveTrunk(playerPedId, data)
     SetVehicleDoorShut(data.entity, 5, false)
 
     Wait(250)
-
-    SetEntityVisible(playerPedId, true, 0)
-
+    if not Config.showPlayerInTrunk then
+        SetEntityVisible(playerPedId, true, 0)
+    end
     lib.hideTextUI()
 end
 
@@ -280,8 +285,9 @@ RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
     SetVehicleDoorShut(vehicle, 5, false)
 
     Wait(250)
-
-    SetEntityVisible(playerPedId, false, 0)
+    if not Config.showPlayerInTrunk then
+        SetEntityVisible(playerPedId, false, 0)
+    end
 end)
 
 RegisterCommand("detach", function ()
