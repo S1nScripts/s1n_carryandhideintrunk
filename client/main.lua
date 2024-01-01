@@ -405,7 +405,7 @@ exports["ox_target"]:addGlobalVehicle(
 lib.addKeybind({
     name = 'stopcarry',
     description = 'press G to stop carry',
-    defaultKey = 'G',
+    defaultKey = Config.stopCarryKeybind,
     onPressed = function(self)
         if not carrying then return end
 
