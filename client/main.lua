@@ -131,7 +131,7 @@ end
 
 local function leaveTrunk(playerPedId, data)
     disableKeysTemporary = false
-    TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing")
+    TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", NetworkGetNetworkIdFromEntity(data.entity)))
 
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, true, true)
