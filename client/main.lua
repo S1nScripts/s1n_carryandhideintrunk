@@ -420,7 +420,7 @@ exports["ox_target"]:addGlobalVehicle(
 
 lib.addKeybind({
     name = 'stopcarry',
-    description = 'press G to stop carry',
+    description = 'Stop carry',
     defaultKey = Config.stopCarryKeybind,
     onPressed = function(self)
         if not carrying then return end
@@ -432,3 +432,18 @@ lib.addKeybind({
         lib.hideTextUI()
     end,
 })
+
+lib.addKeybind({
+    name = 'leavetrunk',
+    description = 'Leave trunk',
+    defaultKey = Config.leaveTrunkKeybind,
+    onPressed = function(self)
+        if not inTrunk then return end
+        local veh, vehCoords = lib.getClosestVehicle(GetEntityCoords(cache.ped, 3.0, true)
+        if not veh then return end
+        local data = {entity = veh}
+
+        leaveTrunk(cache.ped, data)
+    end,
+})
+
