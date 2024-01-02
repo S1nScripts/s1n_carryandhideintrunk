@@ -60,7 +60,7 @@ local function disableKeys()
 end
 
 local function checkTrunkOpen(vehicle)
-    local playerPedId = PlayerPedId()
+    local playerPedId = cache.ped
 
     if GetVehicleDoorAngleRatio(vehicle, 5) >= 0.9 then
         if IsEntityVisible(playerPedId) then return end
@@ -82,7 +82,7 @@ local function startCheckTrunkOpenLoop()
         while inTrunk do
             Citizen.Wait(0)
 
-            local vehicle = GetEntityAttachedTo(PlayerPedId())
+            local vehicle = GetEntityAttachedTo(cache.ped)
             checkTrunkOpen(vehicle)
         end
     end)
@@ -178,7 +178,7 @@ local function carryPlayer(data)
 
     TriggerServerEvent("s1n_carryandhideintrunk:carry", GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)))
 
-    TaskPlayAnim(PlayerPedId(), "missfinale_c2mcs_1", "fin_c2_mcs_1_camman", 8.0, -8.0, 100000, 49, 0, false, false, false)
+    TaskPlayAnim(cache.ped, "missfinale_c2mcs_1", "fin_c2_mcs_1_camman", 8.0, -8.0, 100000, 49, 0, false, false, false)
     lib.showTextUI("[G] - Stop carrying")
 end
 
@@ -192,7 +192,7 @@ local function hidePlayer(data)
         })
     end
 
-    ClearPedTasks(PlayerPedId())
+    ClearPedTasks(cache.ped)
     TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
 end
 
@@ -218,7 +218,7 @@ RegisterNetEvent("s1n_carryandhideintrunk:carry", function(carrierId)
     end
 
     -- Player carried
-    local playerPedId = PlayerPedId()
+    local playerPedId = cache.ped
     local carrier = GetPlayerPed(GetPlayerFromServerId(carrierId))
     if not carrier then return print("carrier: not found") end
 
@@ -230,7 +230,7 @@ end)
 RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function(networkTargetVehicleId)
     beingCarried = false
     disableKeysTemporary = false
-    local playerPedId = PlayerPedId()
+    local playerPedId = cache.ped
 
     if putInSomeoneTrunk and networkTargetVehicleId then
         local vehicle = NetworkGetEntityFromNetworkId(networkTargetVehicleId)
@@ -250,7 +250,7 @@ RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function(networkTargetV
 end)
 
 RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
-    local playerPedId = PlayerPedId()
+    local playerPedId = cache.ped
     local vehicle = NetworkGetEntityFromNetworkId(vehicleId)
     if not vehicle then return print("vehicleId: entity not found") end
 
@@ -291,8 +291,8 @@ RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
 end)
 
 RegisterCommand("detach", function ()
-    DetachEntity(PlayerPedId(), true, false)
-    ClearPedSecondaryTask(PlayerPedId())
+    DetachEntity(cache.ped, true, false)
+    ClearPedSecondaryTask(cache.ped)
 end, false)
 ---
 ---- Command option
@@ -306,7 +306,7 @@ if Config.allowCarryAsCommand then
         
         TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 
-        ClearPedSecondaryTask(PlayerPedId())
+        ClearPedSecondaryTask(cache.ped)
         carrying = false
         lib.hideTextUI()
     end)
@@ -384,7 +384,7 @@ exports["ox_target"]:addGlobalVehicle(
                     return #(coords - GetEntityBonePosition_2(entity, boneId)) < 0.9
                 end,
                 onSelect = function(data)
-                    local playerPedId = PlayerPedId()
+                    local playerPedId = cache.ped
 
                     hide(playerPedId, data)
                 end
@@ -404,7 +404,7 @@ exports["ox_target"]:addGlobalVehicle(
                     return #(coords - GetEntityBonePosition_2(entity, boneId)) < 0.9
                 end,
                 onSelect = function(data)
-                    local playerPedId = PlayerPedId()
+                    local playerPedId = cache.ped
 
                     leaveTrunk(playerPedId, data)
                 end
@@ -428,7 +428,7 @@ lib.addKeybind({
         TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 
         --DetachEntity(PlayerPedId(), true, false)
-        ClearPedSecondaryTask(PlayerPedId())
+        ClearPedSecondaryTask(cache.ped)
         lib.hideTextUI()
     end,
 })
