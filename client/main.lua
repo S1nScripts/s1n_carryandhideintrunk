@@ -294,7 +294,23 @@ RegisterCommand("detach", function ()
     DetachEntity(PlayerPedId(), true, false)
     ClearPedSecondaryTask(PlayerPedId())
 end, false)
+---
+---- Command option
+---
+if Config.allowCarryAsCommand then
+    RegisterCommand('carry', function()
+        local ped, entity, coords = lib.getClosestPlayer(GetEntityCoords(cache.ped), 5.0, false)
+        local data = {entity = entity}
+        
+        if not carrying then carryPlayer(data) return end
+        
+        TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 
+        ClearPedSecondaryTask(PlayerPedId())
+        carrying = false
+        lib.hideTextUI()
+    end)
+end
 
 --
 --- ox_target interactions
