@@ -11,6 +11,27 @@ lib.locale()
 --- Functions
 --
 
+local function disableCamera(vehicle)
+    disableCameraTemp = true
+
+    DoScreenFadeOut(1)
+    Citizen.CreateThread(function()
+        while disableCameraTemp do
+            Citizen.Wait(0)
+            local sleep = 1000
+
+            if GetVehicleDoorAngleRatio(vehicle, 5) > 0.0 then
+                DoScreenFadeIn(1)
+            else 
+                DoScreenFadeOut(1)
+            end
+    
+            if sleep then
+                Wait(sleep)
+            end
+        end
+    end)
+end
 
 local function disableKeys()
     disableKeysTemporary = true
@@ -103,7 +124,9 @@ local function hide(playerPedId, data)
     TriggerServerEvent("s1n_carryandhideintrunk:addPlayerToTrunkListing", NetworkGetNetworkIdFromEntity(data.entity))
 
     disableKeys()
-
+    if Config.allowBlackout then
+        disableCamera(data.entity)
+    end
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, false, false)
 
@@ -138,6 +161,7 @@ end
 
 local function leaveTrunk(playerPedId, data)
     disableKeysTemporary = false
+    disableCameraTemp = false
     TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", NetworkGetNetworkIdFromEntity(data.entity))
 
     SetCarBootOpen(data.entity)
@@ -164,6 +188,7 @@ local function leaveTrunk(playerPedId, data)
         SetEntityVisible(playerPedId, true, 0)
     end
     lib.hideTextUI()
+    DoScreenFadeIn(1)
 end
 
 local function carryPlayer(data)
@@ -232,6 +257,8 @@ end)
 RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function(networkTargetVehicleId)
     beingCarried = false
     disableKeysTemporary = false
+    disableCameraTemp = false
+    
     local playerPedId = cache.ped
 
     if putInSomeoneTrunk and networkTargetVehicleId then
@@ -241,7 +268,7 @@ RegisterNetEvent("s1n_carryandhideintrunk:stopCarrying", function(networkTargetV
 
         print("tp")
         SetEntityCoords(playerPedId, behindPos.x, behindPos.y, behindPos.z, true, true, true, false)
-
+        DoScreenFadeIn(1)
     end
 
     putInSomeoneTrunk = false
@@ -260,6 +287,9 @@ RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
 
     disableKeys()
 
+    if Config.allowBlackout then 
+        disableCamera(vehicle)
+    end
 
     DetachEntity(playerPedId, true, false)
     ClearPedSecondaryTask(playerPedId)
