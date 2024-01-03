@@ -59,3 +59,10 @@ AddEventHandler("playerDropped", function ()
         playersInTrunk[source] = nil
     end
 end)
+
+
+---
+---- Version check
+---
+
+lib.versionCheck('S1nScripts/s1n_carryandhideintrunk')
