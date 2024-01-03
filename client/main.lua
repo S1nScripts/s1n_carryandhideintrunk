@@ -124,8 +124,9 @@ local function hide(playerPedId, data)
     TriggerServerEvent("s1n_carryandhideintrunk:addPlayerToTrunkListing", NetworkGetNetworkIdFromEntity(data.entity))
 
     disableKeys()
-    disableCamera(data.entity)
-
+    if Config.allowBlackout then
+        disableCamera(data.entity)
+    end
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, false, false)
 
@@ -285,7 +286,10 @@ RegisterNetEvent("s1n_carryandhideintrunk:hidePlayer", function(vehicleId)
     putInSomeoneTrunk = true
 
     disableKeys()
-    disableCamera(vehicle)
+
+    if Config.allowBlackout then 
+        disableCamera(vehicle)
+    end
 
     DetachEntity(playerPedId, true, false)
     ClearPedSecondaryTask(playerPedId)
