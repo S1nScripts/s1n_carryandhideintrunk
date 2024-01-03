@@ -6,7 +6,7 @@ local beingCarried = false
 local disableKeysTemporary = false
 local putInSomeoneTrunk = false
 
-
+lib.locale()
 --
 --- Functions
 --
