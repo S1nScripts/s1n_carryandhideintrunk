@@ -20,6 +20,8 @@ local function disableKeys()
             Citizen.Wait(0)
 
             -- Can't loop it because it won't have the attended effect due to the wait time
+            DisableControlAction(0, 24, true)
+            DisableControlAction(0, 25, true)
             DisableControlAction(0, 77, true)
             DisableControlAction(0, 323, true)
             DisableControlAction(0, 20, true)
