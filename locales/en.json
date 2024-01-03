@@ -12,5 +12,18 @@
     "target_remove_from_trunk": "Remove person from trunk",
     "target_put_person_in_trunk": "Put person in the trunk",
     "target_hide_in_trunk": "Hide in the trunk",
-    "target_leave_trunk": "Leave the trunk"
+    "target_leave_trunk": "Leave the trunk",
+
+    "webhook_start_carry_title": "CARRY",
+    "webhook_start_carry_msg": "A player lifted another player on his shoulder",
+    "webhook_stop_carry_title": "CARRY",
+    "webhook_stop_carry_msg": "A player let go of another player from his shoulder",
+    "webhook_lifter_name_and_id": "Lifter name + ID",
+    "webhook_lifted_name_and_id": "Lifted player name + ID",
+    "webhook_distance_between_lifter_and_lifted": "Distance between lifter and lifted before carry",
+    "webhook_hide_in_trunk_title": "CARRY: HIDE IN TRUNK",
+    "webhook_hide_in_trunk_msg": "A player has put another player in a trunk",
+    "webhook_hide_lifter": "Lifter name + ID",
+    "webhook_hide_lifted": "Lifted (hidden) player name + ID",
+    "webhook_hide_vehicle": "Network ID of vehicle where lifted player was hidden"
 }

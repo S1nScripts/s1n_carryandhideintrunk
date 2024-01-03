@@ -12,5 +12,18 @@
     "target_remove_from_trunk": "Vybrat osobu z kufru",
     "target_put_person_in_trunk": "Dát osobu do kufru",
     "target_hide_in_trunk": "Schovat se do kufru",
-    "target_leave_trunk": "Opustit kufr"
+    "target_leave_trunk": "Opustit kufr",
+
+    "webhook_start_carry_title": "CARRY",
+    "webhook_start_carry_msg": "Hráč zvedl jiného hráče",
+    "webhook_stop_carry_title": "CARRY",
+    "webhook_stop_carry_msg": "Hráč pustil na zem jiného hráče",
+    "webhook_lifter_name_and_id": "Hráč který zvedl osobu (jméno + ID)",
+    "webhook_lifted_name_and_id": "Zvednutý hráč (jméno + ID)",
+    "webhook_distance_between_lifter_and_lifted": "Vzdálenost mezi hráči před zahájením carry",
+    "webhook_hide_in_trunk_title": "CARRY: HIDE IN TRUNK",
+    "webhook_hide_in_trunk_msg": "Hráč skryl jiného hráče do kufru",
+    "webhook_hide_lifter": "Hráč který zvedl osobu (jméno + ID)",
+    "webhook_hide_lifted": "Zvednutý (schovaný) hráč (jméno + ID)",
+    "webhook_hide_vehicle": "Network ID vozidla do kterého byla osoba vložena"
 }
