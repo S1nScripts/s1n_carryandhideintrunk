@@ -20,6 +20,8 @@ local function disableKeys()
             Citizen.Wait(0)
 
             -- Can't loop it because it won't have the attended effect due to the wait time
+            DisableControlAction(0, 24, true)
+            DisableControlAction(0, 25, true)
             DisableControlAction(0, 77, true)
             DisableControlAction(0, 323, true)
             DisableControlAction(0, 20, true)
@@ -136,7 +138,7 @@ end
 
 local function leaveTrunk(playerPedId, data)
     disableKeysTemporary = false
-    TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", NetworkGetNetworkIdFromEntity(data.entity)))
+    TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", NetworkGetNetworkIdFromEntity(data.entity))
 
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, true, true)
@@ -302,6 +304,7 @@ if Config.allowCarryAsCommand then
         local ped, entity, coords = lib.getClosestPlayer(GetEntityCoords(cache.ped), 5.0, false)
         local data = {entity = entity}
         
+        if beingCarried then return end
         if not carrying then carryPlayer(data) return end
         
         TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
@@ -439,7 +442,7 @@ lib.addKeybind({
     defaultKey = Config.leaveTrunkKeybind,
     onPressed = function(self)
         if not inTrunk then return end
-        local veh, vehCoords = lib.getClosestVehicle(GetEntityCoords(cache.ped, 3.0, true)
+        local veh, vehCoords = lib.getClosestVehicle(GetEntityCoords(cache.ped, 3.0, true))
         if not veh then return end
         local data = {entity = veh}
 
