@@ -136,7 +136,7 @@ end
 
 local function leaveTrunk(playerPedId, data)
     disableKeysTemporary = false
-    TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", NetworkGetNetworkIdFromEntity(data.entity)))
+    TriggerServerEvent("s1n_carryandhideintrunk:removeMeFromTrunkListing", NetworkGetNetworkIdFromEntity(data.entity))
 
     SetCarBootOpen(data.entity)
     SetEntityCollision(playerPedId, true, true)
@@ -439,7 +439,7 @@ lib.addKeybind({
     defaultKey = Config.leaveTrunkKeybind,
     onPressed = function(self)
         if not inTrunk then return end
-        local veh, vehCoords = lib.getClosestVehicle(GetEntityCoords(cache.ped, 3.0, true)
+        local veh, vehCoords = lib.getClosestVehicle(GetEntityCoords(cache.ped, 3.0, true))
         if not veh then return end
         local data = {entity = veh}
 
