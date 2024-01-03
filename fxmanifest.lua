@@ -10,7 +10,6 @@ lua54 'yes'
 game "gta5"
 
 client_scripts {
-    "languages/english.lua",
     "config.lua",
     "client/main.lua"
 }
@@ -21,6 +20,9 @@ server_scripts {
     "server/main.lua"
 }
 
+files {
+    'locales/*.json'
+}
 dependencies {
     '/onesync',
 }
