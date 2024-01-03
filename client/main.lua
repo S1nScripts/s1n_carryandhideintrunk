@@ -92,8 +92,8 @@ local function hide(playerPedId, data)
     local isEmpty = lib.callback.await('s1n_carryandhideintrunk:checkEmptyTrunk', 200, NetworkGetNetworkIdFromEntity(data.entity))
     if not isEmpty then
         return lib.notify({
-            title = 'Ooops !',
-            description = 'There is already someone in the trunk',
+            title = locale('trunk_occupied_notify_title'),
+            description = locale('trunk_occupied_notify_msg'),
             type = 'error'
         })
     end
@@ -131,7 +131,7 @@ local function hide(playerPedId, data)
         SetEntityVisible(playerPedId, false, 0)
     end
 
-    lib.showTextUI("[E] - Get out of the trunk")
+    lib.showTextUI(locale('leave_trunk_textui'))
 end
 
 local function leaveTrunk(playerPedId, data)
@@ -179,15 +179,15 @@ local function carryPlayer(data)
     TriggerServerEvent("s1n_carryandhideintrunk:carry", GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)))
 
     TaskPlayAnim(cache.ped, "missfinale_c2mcs_1", "fin_c2_mcs_1_camman", 8.0, -8.0, 100000, 49, 0, false, false, false)
-    lib.showTextUI("[G] - Stop carrying")
+    lib.showTextUI(locale('stop_carry_textui'))
 end
 
 local function hidePlayer(data)
     local isEmpty = lib.callback.await('s1n_carryandhideintrunk:checkEmptyTrunk', 200, NetworkGetNetworkIdFromEntity(data.entity))
     if not isEmpty then
         return lib.notify({
-            title = 'Ooops !',
-            description = 'There is already someone in the trunk',
+            title = locale('trunk_occupied_notify_title'),
+            description = locale('trunk_occupied_notify_msg'),
             type = 'error'
         })
     end
@@ -321,7 +321,7 @@ exports["ox_target"]:addGlobalPlayer(
         {
             name = 'ox_target:carry',
             icon = 'fa-solid fa-car-rear',
-            label = "Carry player",
+            label = locale('target_carry_player'),
             canInteract = function(entity, distance, coords, name, boneId)
                 return true
             end,
@@ -336,7 +336,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = "Remove the person from trunk",
+                label = locale('target_remove_from_trunk'),
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
@@ -354,7 +354,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = "Put the person in the trunk",
+                label = locale('target_put_person_in_trunk'),
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
@@ -371,7 +371,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:hide',
                 icon = 'fa-solid fa-car-rear',
-                label = "Hide in trunk",
+                label = locale('target_hide_in_trunk'),
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if inTrunk then return end
@@ -392,7 +392,7 @@ exports["ox_target"]:addGlobalVehicle(
             {
                 name = 'ox_target:trunk:leave',
                 icon = 'fa-solid fa-car-rear',
-                label = "Leave the trunk",
+                label = locale('target_leave_trunk'),
                 bones = 'boot',
                 canInteract = function(entity, distance, coords, name, boneId)
                     if not inTrunk then return end
@@ -420,7 +420,7 @@ exports["ox_target"]:addGlobalVehicle(
 
 lib.addKeybind({
     name = 'stopcarry',
-    description = 'Stop carry',
+    description = locale('stop_carry_keybind_description'),
     defaultKey = Config.stopCarryKeybind,
     onPressed = function(self)
         if not carrying then return end
@@ -435,7 +435,7 @@ lib.addKeybind({
 
 lib.addKeybind({
     name = 'leavetrunk',
-    description = 'Leave trunk',
+    description = locale('leave_trunk_keybind_description'),
     defaultKey = Config.leaveTrunkKeybind,
     onPressed = function(self)
         if not inTrunk then return end
