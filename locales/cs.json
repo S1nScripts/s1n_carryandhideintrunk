@@ -1,0 +1,16 @@
+{
+    "trunk_occupied_notify_title": "Hups!",
+    "trunk_occupied_notify_msg": "Kufr není prázdný!",
+
+    "stop_carry_textui": "[G] - Pustit",
+    "leave_trunk_textui": "[E] - Vyjít z kufru",
+
+    "stop_carry_keybind_description": "Pustit osobu",
+    "leave_trunk_keybind_description": "Opustit kufr",
+
+    "target_carry_player": "Nosit osobu",
+    "target_remove_from_trunk": "Vybrat osobu z kufru",
+    "target_put_person_in_trunk": "Dát osobu do kufru",
+    "target_hide_in_trunk": "Schovat se do kufru",
+    "target_leave_trunk": "Opustit kufr"
+}
