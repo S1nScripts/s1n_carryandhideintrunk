@@ -304,6 +304,7 @@ if Config.allowCarryAsCommand then
         local ped, entity, coords = lib.getClosestPlayer(GetEntityCoords(cache.ped), 5.0, false)
         local data = {entity = entity}
         
+        if beingCarried then return end
         if not carrying then carryPlayer(data) return end
         
         TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
