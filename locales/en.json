@@ -1,0 +1,12 @@
+{
+    "trunk_occupied_notify_title": "Ooops !",
+    "trunk_occupied_notify_msg": "The trunk is not empty !",
+
+    "stop_carry_textui": "[G] - Stop carrying",
+    "keybind_description": "Press G to stop carry",
+
+    "target_remove_from_trunk": "Remove person from trunk",
+    "target_put_person_in_trunk": "Put person in the trunk",
+    "target_hide_in_trunk": "Hide in the trunk",
+    "target_leave_trunk": "Leave the trunk"
+}
