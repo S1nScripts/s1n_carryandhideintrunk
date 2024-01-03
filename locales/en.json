@@ -3,8 +3,12 @@
     "trunk_occupied_notify_msg": "The trunk is not empty !",
 
     "stop_carry_textui": "[G] - Stop carrying",
-    "keybind_description": "Press G to stop carry",
+    "leave_trunk_textui": "[E] - Get out of the trunk",
 
+    "stop_carry_keybind_description": "Stop carry",
+    "leave_trunk_keybind_description": "Leave trunk",
+
+    "target_carry_player": "Carry player",
     "target_remove_from_trunk": "Remove person from trunk",
     "target_put_person_in_trunk": "Put person in the trunk",
     "target_hide_in_trunk": "Hide in the trunk",
