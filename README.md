@@ -2,6 +2,8 @@
 
 Elevate your FiveM gaming experience with the "Carry And Hide In Trunk" script! 🎮 Now you can carry players, hide in trunks, and interact with vehicles like never before.
 
+Join the S1nScripts community on Discord at [discord.gg/4gtdmjuN3Q](https://discord.gg/4gtdmjuN3Q).
+
 ## 🌟 Features
 - 🤝 Carry other players using ox_target
 - 🚘 Put players in vehicle trunks
@@ -23,9 +25,7 @@ Elevate your FiveM gaming experience with the "Carry And Hide In Trunk" script! 
 - 🛠 ox_target dependency
 
 ## 💬 Support
-Encountered a bug 🐞 or have an awesome feature suggestion 🌠? Don't hesitate to:
-- Join the S1nScripts community on Discord at [discord.gg/4gtdmjuN3Q](https://discord.gg/4gtdmjuN3Q).
-- Create an issue in the GitHub repository.
+Encountered a bug 🐞 or have an awesome feature suggestion 🌠? Don't hesitate to create an issue in the repository.
 
 ## 🎨 Customization
 The script is fully open to modifications. Feel free to tweak it to fit your server's unique needs! 🛠
