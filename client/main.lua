@@ -220,11 +220,11 @@ local function hidePlayer(data)
     end
 
     ClearPedTasks(cache.ped)
-    TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
+    TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), NetworkGetNetworkIdFromEntity(data.entity))
 end
 
 local function removePlayerFromTrunk(data)
-    TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
+    TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity)), NetworkGetNetworkIdFromEntity(data.entity))
     lib.hideTextUI()
 end
 
