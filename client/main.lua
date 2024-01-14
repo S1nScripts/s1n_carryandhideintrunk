@@ -11,6 +11,12 @@ lib.locale()
 --- Functions
 --
 
+local function isPedOnCarry()
+
+    return beingCarried
+end
+exports('isPedOnCarry', isPedOnCarry)
+
 local function disableCamera(vehicle)
     disableCameraTemp = true
 
