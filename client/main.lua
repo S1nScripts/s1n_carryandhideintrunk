@@ -457,11 +457,11 @@ lib.addKeybind({
     defaultKey = Config.stopCarryKeybind,
     onPressed = function(self)
         if not carrying then return end
-
+        
         TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
 
-        --DetachEntity(PlayerPedId(), true, false)
         ClearPedSecondaryTask(cache.ped)
+        carrying = false
         lib.hideTextUI()
     end,
 })
