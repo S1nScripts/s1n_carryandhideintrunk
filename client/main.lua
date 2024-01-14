@@ -225,6 +225,9 @@ end
 
 local function removePlayerFromTrunk(data)
     TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
+    
+    ClearPedSecondaryTask(cache.ped)
+    carrying = false
     lib.hideTextUI()
 end
 
