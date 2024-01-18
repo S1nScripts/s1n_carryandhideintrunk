@@ -1,0 +1,68 @@
+name: Sync Config to Documentation
+
+# This workflow is triggered on pushes that include changes to config.lua
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'config.lua'
+      - 'shared/config.lua'
+
+jobs:
+  update-docs:
+    # This job runs on the latest Ubuntu runner
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the script repository
+    - name: Checkout Script Repository
+      uses: actions/checkout@v2
+      with:
+        path: ${{ github.repository }}
+
+    # Step 2: Checkout the documentation repository
+    - name: Checkout Documentation Repository
+      uses: actions/checkout@v2
+      with:
+        repository: 'S1nScripts/docs.s1nscripts.com'
+        token: ${{ secrets.ACTION_TOKEN_ALL_REPO }}
+        path: 'docs.s1nscripts.com'
+
+    # Step 3: Copy config.lua content to a specific markdown file
+    - name: Copy config.lua to Markdown
+      run: |
+        REPO_NAME=$(basename $GITHUB_REPOSITORY | sed 's/s1n_//')
+
+        if [ -f ${{ github.repository }}/config.lua ]; then
+          CONFIG_PATH=${{ github.repository }}/config.lua
+        elif [ -f ${{ github.repository }}/shared/config.lua ]; then
+          CONFIG_PATH=${{ github.repository }}/shared/config.lua
+        fi
+
+        if [ -n "$CONFIG_PATH" ]; then
+          MARKDOWN_FILE=docs.s1nscripts.com/docs/$REPO_NAME/config.md
+
+          # Store new content from config.lua
+          NEW_CONTENT=$(cat $CONFIG_PATH)
+    
+          # Use awk to replace content between ```lua markers
+          awk -v new_content="$NEW_CONTENT" '
+          BEGIN { print_it = 1 }
+          /```lua/ { print; print_it = 0; next }
+          /```/ { print new_content; print; print_it = 1; next }
+          print_it { print }
+          ' $MARKDOWN_FILE > temp.md
+    
+          # Replace old file with new file
+          mv temp.md $MARKDOWN_FILE
+        fi
+
+    # Step 4: Commit and push changes to the documentation repository
+    - name: Commit and Push Changes
+      run: |
+        cd docs.s1nscripts.com
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "Update configuration documentation for ${{ github.repository }}"
+        git push
