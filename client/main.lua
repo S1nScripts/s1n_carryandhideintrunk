@@ -1,5 +1,6 @@
 local inTrunk = false
 local carrying = false
+local putSomebodyInTrunk = false
 local carryingEntity
 
 local beingCarried = false
@@ -12,7 +13,6 @@ lib.locale()
 --
 
 local function isPedOnCarry()
-
     return beingCarried
 end
 exports('isPedOnCarry', isPedOnCarry)
@@ -188,9 +188,11 @@ local function leaveTrunk(playerPedId, data)
     SetVehicleDoorShut(data.entity, 5, false)
 
     Wait(250)
+
     if not Config.showPlayerInTrunk then
         SetEntityVisible(playerPedId, true, 0)
     end
+
     lib.hideTextUI()
     DoScreenFadeIn(1)
 end
@@ -223,6 +225,10 @@ local function hidePlayer(data)
         })
     end
 
+    putSomebodyInTrunk = true
+
+    lib.hideTextUI()
+
     ClearPedTasks(cache.ped)
     TriggerServerEvent("s1n_carryandhideintrunk:hidePlayer", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
 end
@@ -231,7 +237,10 @@ local function removePlayerFromTrunk(data)
     TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)), NetworkGetNetworkIdFromEntity(data.entity))
     
     ClearPedSecondaryTask(cache.ped)
+
     carrying = false
+    putSomebodyInTrunk = false
+
     lib.hideTextUI()
 end
 
@@ -464,11 +473,13 @@ lib.addKeybind({
     defaultKey = Config.stopCarryKeybind,
     onPressed = function(self)
         if not carrying then return end
-        
-        TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
+        if putSomebodyInTrunk then return end
 
+        TriggerServerEvent("s1n_carryandhideintrunk:stopCarrying", GetPlayerServerId(NetworkGetPlayerIndexFromPed(carryingEntity)))
         ClearPedSecondaryTask(cache.ped)
+
         carrying = false
+
         lib.hideTextUI()
     end,
 })
